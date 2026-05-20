@@ -9,14 +9,13 @@
   <link rel="stylesheet" href="index.css">
 
   <style>
-    /* AR page specific overrides */
     body {
       margin: 0;
       overflow: hidden;
       background: #000;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Hide A-Frame's default UI and error messages */
     .a-enter-vr, .a-orientation-modal {
       display: none !important;
     }
@@ -38,111 +37,34 @@
       z-index: 999999;
       padding: 32px;
       text-align: center;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    .ar-error-screen.hidden {
-      display: none;
-    }
+    .ar-error-screen.hidden { display: none; }
 
-    .error-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-    }
+    .error-icon { font-size: 64px; margin-bottom: 24px; }
+    .error-title { font-size: 1.5rem; font-weight: 700; color: #f0eef6; margin-bottom: 12px; }
+    .error-message { font-size: 0.95rem; color: #9b95b0; max-width: 420px; line-height: 1.6; margin-bottom: 28px; }
 
-    .error-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #f0eef6;
-      margin-bottom: 12px;
-    }
+    .error-tips { text-align: left; max-width: 380px; margin-bottom: 32px; }
+    .error-tips h4 { color: #A78BFA; font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .error-tips ul { list-style: none; padding: 0; }
+    .error-tips li { color: #9b95b0; font-size: 0.85rem; padding: 6px 0; padding-left: 20px; position: relative; }
+    .error-tips li::before { content: '→'; position: absolute; left: 0; color: #8B5CF6; }
 
-    .error-message {
-      font-size: 0.95rem;
-      color: #9b95b0;
-      max-width: 420px;
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
-    .error-tips {
-      text-align: left;
-      max-width: 380px;
-      margin-bottom: 32px;
-    }
-
-    .error-tips h4 {
-      color: #A78BFA;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .error-tips ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .error-tips li {
-      color: #9b95b0;
-      font-size: 0.85rem;
-      padding: 6px 0;
-      padding-left: 20px;
-      position: relative;
-    }
-
-    .error-tips li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: #8B5CF6;
-    }
-
-    .error-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
+    .error-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
     .error-actions .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 28px;
-      border-radius: 12px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 28px; border-radius: 12px; font-family: 'Inter', sans-serif;
+      font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;
+      transition: all 0.3s ease; text-decoration: none;
     }
-
     .error-actions .btn-retry {
       background: linear-gradient(135deg, #8B5CF6, #6366F1, #22D3EE);
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+      color: #fff; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
     }
-
-    .error-actions .btn-retry:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.45);
-    }
-
-    .error-actions .btn-back {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f0eef6;
-    }
-
-    .error-actions .btn-back:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
+    .error-actions .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(139, 92, 246, 0.45); }
+    .error-actions .btn-back { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #f0eef6; }
+    .error-actions .btn-back:hover { background: rgba(255,255,255,0.08); }
   </style>
 </head>
 <body>
@@ -150,17 +72,15 @@
   <!-- Loading Screen -->
   <div class="ar-loading" id="ar-loading">
     <div class="loading-spinner"></div>
-    <h2>Initializing AR</h2>
+    <h2 id="loading-title">Initializing AR</h2>
     <p>Please allow camera access when prompted</p>
   </div>
 
-  <!-- Error Screen (hidden by default) -->
+  <!-- Error Screen -->
   <div class="ar-error-screen hidden" id="ar-error-screen">
     <div class="error-icon">📷</div>
     <div class="error-title" id="error-title">Camera Not Available</div>
-    <div class="error-message" id="error-message">
-      We couldn't access your camera. This is needed for the AR experience to work.
-    </div>
+    <div class="error-message" id="error-message">We couldn't access your camera.</div>
     <div class="error-tips">
       <h4>Try these fixes</h4>
       <ul>
@@ -172,17 +92,15 @@
       </ul>
     </div>
     <div class="error-actions">
-      <button class="btn btn-retry" id="retry-btn" onclick="retryCameraAccess()">🔄 Retry Camera</button>
+      <button class="btn btn-retry" onclick="location.reload()">🔄 Retry</button>
       <a href="index.html" class="btn btn-back">← Back to Home</a>
     </div>
   </div>
 
-  <!-- AR UI Overlay -->
+  <!-- AR UI Overlay (hidden until camera ready) -->
   <div class="ar-top-bar" id="ar-top-bar" style="display:none;">
-    <a href="index.html" class="ar-back-btn" id="ar-back-btn">
-      ← Back
-    </a>
-    <div class="ar-status" id="ar-status">
+    <a href="index.html" class="ar-back-btn">← Back</a>
+    <div class="ar-status">
       <span class="status-dot"></span>
       <span id="status-text">Camera Active</span>
     </div>
@@ -193,313 +111,268 @@
     Point your camera at the Hiro marker
   </div>
 
-  <!-- AR Scene container (will be populated after camera check) -->
-  <div id="ar-scene-container"></div>
+  <!-- 
+    A-Frame AR Scene (static HTML so A-Frame properly registers all components).
+    This is hidden until scripts load. A-Frame auto-detects <a-scene> on load.
+  -->
+  <a-scene
+    id="ar-scene"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true;"
+    vr-mode-ui="enabled: false"
+    style="display: none;"
+  >
+    <!-- Hiro Marker -->
+    <a-marker preset="hiro" id="hiro-marker" emitevents="true">
+
+      <!-- ===== Floating 3D Crystal Group ===== -->
+      <a-entity id="crystal-group" position="0 0 0" scale="0 0 0">
+
+        <!-- Base Glow Ring -->
+        <a-ring
+          position="0 0.02 0" rotation="-90 0 0"
+          radius-inner="0.25" radius-outer="0.55"
+          material="color: #7C3AED; opacity: 0.25; side: double; transparent: true;"
+          animation="property: scale; from: 0.9 0.9 0.9; to: 1.15 1.15 1.15; dir: alternate; loop: true; dur: 2000; easing: easeInOutSine"
+          animation__rotate="property: rotation; from: -90 0 0; to: -90 360 0; loop: true; dur: 8000; easing: linear"
+        ></a-ring>
+
+        <!-- Secondary Base Ring -->
+        <a-ring
+          position="0 0.015 0" rotation="-90 0 0"
+          radius-inner="0.15" radius-outer="0.2"
+          material="color: #22D3EE; opacity: 0.3; side: double; transparent: true;"
+          animation="property: scale; from: 1.1 1.1 1.1; to: 0.85 0.85 0.85; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
+          animation__rotate="property: rotation; from: -90 0 0; to: -90 -360 0; loop: true; dur: 6000; easing: linear"
+        ></a-ring>
+
+        <!-- ===== Main Crystal (Diamond Shape) ===== -->
+        <a-entity id="crystal-main" position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+          animation__spin="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 6000; easing: linear"
+        >
+          <!-- Top Pyramid -->
+          <a-cone position="0 0.1 0" radius-bottom="0.18" radius-top="0" height="0.32" segments-radial="6"
+            material="color: #8B5CF6; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"></a-cone>
+          <!-- Bottom Pyramid -->
+          <a-cone position="0 -0.08 0" radius-bottom="0" radius-top="0.18" height="0.22" segments-radial="6"
+            material="color: #6D28D9; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"></a-cone>
+          <!-- Inner Glow -->
+          <a-sphere position="0 0.02 0" radius="0.08"
+            material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.8; opacity: 0.6; transparent: true;"
+            animation="property: scale; from: 0.8 0.8 0.8; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
+          ></a-sphere>
+        </a-entity>
+
+        <!-- ===== Orbiting Ring 1 ===== -->
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-torus radius="0.32" radius-tubular="0.006" segments-radial="3" segments-tubular="64"
+            material="color: #A78BFA; opacity: 0.6; transparent: true; emissive: #7C3AED; emissiveIntensity: 0.3;"
+            rotation="25 0 15"
+            animation="property: rotation; from: 25 0 15; to: 25 360 15; loop: true; dur: 4000; easing: linear"
+          ></a-torus>
+        </a-entity>
+
+        <!-- ===== Orbiting Ring 2 ===== -->
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-torus radius="0.38" radius-tubular="0.004" segments-radial="3" segments-tubular="64"
+            material="color: #22D3EE; opacity: 0.4; transparent: true; emissive: #06B6D4; emissiveIntensity: 0.3;"
+            rotation="70 0 -20"
+            animation="property: rotation; from: 70 0 -20; to: 70 -360 -20; loop: true; dur: 5000; easing: linear"
+          ></a-torus>
+        </a-entity>
+
+        <!-- ===== Orbiting Particles ===== -->
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity animation="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear">
+            <a-sphere position="0.42 0 0" radius="0.022"
+              material="color: #DDD6FE; emissive: #A78BFA; emissiveIntensity: 1; opacity: 0.9; transparent: true;"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity rotation="45 0 30"
+            animation="property: rotation; from: 45 0 30; to: 45 -360 30; loop: true; dur: 4500; easing: linear">
+            <a-sphere position="0.35 0 0" radius="0.016"
+              material="color: #A5F3FC; emissive: #22D3EE; emissiveIntensity: 1; opacity: 0.8; transparent: true;"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity rotation="80 30 0"
+            animation="property: rotation; from: 80 30 0; to: 80 390 0; loop: true; dur: 3800; easing: linear">
+            <a-sphere position="0.3 0 0" radius="0.014"
+              material="color: #FBCFE8; emissive: #EC4899; emissiveIntensity: 0.8; opacity: 0.7; transparent: true;"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity animation="property: rotation; from: 0 0 60; to: 360 0 60; loop: true; dur: 2000; easing: linear">
+            <a-sphere position="0.25 0 0" radius="0.01"
+              material="color: #FDE68A; emissive: #F59E0B; emissiveIntensity: 1; opacity: 0.9; transparent: true;"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- ===== Floating Mini Shapes ===== -->
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity animation="property: rotation; from: 20 0 0; to: 20 360 0; loop: true; dur: 7000; easing: linear">
+            <a-box position="0.5 0.05 0" width="0.035" height="0.035" depth="0.035"
+              material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.5; opacity: 0.7; transparent: true;"
+              animation="property: rotation; to: 360 360 0; loop: true; dur: 3000; easing: linear"></a-box>
+          </a-entity>
+        </a-entity>
+
+        <a-entity position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
+          <a-entity animation="property: rotation; from: -30 0 45; to: -30 -360 45; loop: true; dur: 9000; easing: linear">
+            <a-octahedron position="0.55 -0.05 0" radius="0.025"
+              material="color: #A5F3FC; emissive: #06B6D4; emissiveIntensity: 0.5; opacity: 0.6; transparent: true;"
+              animation="property: rotation; to: 0 0 360; loop: true; dur: 4000; easing: linear"></a-octahedron>
+          </a-entity>
+        </a-entity>
+
+        <!-- ===== Lighting ===== -->
+        <a-light type="point" position="0 0.8 0" color="#8B5CF6" intensity="1.0" distance="4"></a-light>
+        <a-light type="point" position="0.3 0.5 0.3" color="#22D3EE" intensity="0.5" distance="3"></a-light>
+        <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
+
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
 
   <script>
     // ============================================
-    // Camera Check & AR Initialization
+    // AR Initialization with Camera Pre-check
     // ============================================
 
     const loadingScreen = document.getElementById('ar-loading');
+    const loadingTitle = document.getElementById('loading-title');
     const errorScreen = document.getElementById('ar-error-screen');
     const errorTitle = document.getElementById('error-title');
     const errorMessage = document.getElementById('error-message');
     const topBar = document.getElementById('ar-top-bar');
-    const bottomHint = document.getElementById('ar-hint');
-    const sceneContainer = document.getElementById('ar-scene-container');
-
-    // First check if camera is available, then load AR
-    async function initAR() {
-      try {
-        // Test camera access first
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: 'environment', // Prefer back camera on phones
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          }
-        });
-
-        // Camera works! Stop the test stream
-        stream.getTracks().forEach(track => track.stop());
-
-        // Now load A-Frame and AR.js scripts dynamically
-        await loadScript('https://aframe.io/releases/1.3.0/aframe.min.js');
-        await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
-
-        // Create the AR scene
-        createARScene();
-
-      } catch (err) {
-        console.error('Camera error:', err);
-        showError(err);
-      }
-    }
-
-    function loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = () => reject(new Error('Failed to load: ' + src));
-        document.head.appendChild(script);
-      });
-    }
+    const hint = document.getElementById('ar-hint');
+    const arScene = document.getElementById('ar-scene');
 
     function showError(err) {
       loadingScreen.classList.add('hidden');
       errorScreen.classList.remove('hidden');
-      topBar.style.display = 'none';
-      bottomHint.style.display = 'none';
+      arScene.style.display = 'none';
 
       if (err.name === 'NotReadableError') {
         errorTitle.textContent = 'Camera is Busy';
         errorMessage.textContent = 'Another app or browser tab is currently using your camera. Close it and try again.';
       } else if (err.name === 'NotAllowedError') {
         errorTitle.textContent = 'Camera Permission Denied';
-        errorMessage.textContent = 'You need to allow camera access for AR to work. Check your browser settings and grant camera permission.';
+        errorMessage.textContent = 'You need to allow camera access for AR to work. Check your browser settings.';
       } else if (err.name === 'NotFoundError') {
         errorTitle.textContent = 'No Camera Found';
-        errorMessage.textContent = 'We couldn\'t find a camera on this device. AR requires a camera to work.';
-      } else if (err.name === 'OverconstrainedError') {
-        errorTitle.textContent = 'Camera Not Compatible';
-        errorMessage.textContent = 'Your camera doesn\'t support the required settings. Trying with default settings...';
-        // Retry with no constraints
-        setTimeout(() => retryWithDefaults(), 1000);
-        return;
+        errorMessage.textContent = 'We couldn\'t find a camera on this device. AR requires a camera.';
       } else {
         errorTitle.textContent = 'Camera Error';
-        errorMessage.textContent = `Something went wrong: ${err.message || err.name || 'Unknown error'}. Please try again.`;
+        errorMessage.textContent = err.message || 'Something went wrong. Please try again.';
       }
     }
 
-    async function retryWithDefaults() {
+    async function initAR() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Step 1: Test camera access FIRST
+        loadingTitle.textContent = 'Checking Camera...';
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
+        // Release the test stream immediately — AR.js will open its own
         stream.getTracks().forEach(track => track.stop());
-        
-        if (!window.AFRAME) {
-          await loadScript('https://aframe.io/releases/1.3.0/aframe.min.js');
-          await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
-        }
-        
-        createARScene();
+
+        // Step 2: Camera works! Load A-Frame + AR.js
+        loadingTitle.textContent = 'Loading AR Engine...';
+
+        await loadScript('https://aframe.io/releases/1.3.0/aframe.min.js');
+        await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
+
+        // Step 3: Show the scene — A-Frame will auto-initialize it
+        loadingTitle.textContent = 'Starting AR...';
+        arScene.style.display = '';
+
+        // Step 4: Wait for scene to be ready, then show UI
+        setupMarkerEvents();
+
       } catch (err) {
+        console.error('AR init error:', err);
         showError(err);
       }
     }
 
-    async function retryCameraAccess() {
-      errorScreen.classList.add('hidden');
-      loadingScreen.classList.remove('hidden');
-      loadingScreen.querySelector('h2').textContent = 'Retrying Camera...';
-
-      // Small delay so user sees the loading screen
-      await new Promise(r => setTimeout(r, 500));
-      initAR();
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load ' + src));
+        document.head.appendChild(s);
+      });
     }
 
-    function createARScene() {
-      // Build the A-Frame AR scene HTML
-      sceneContainer.innerHTML = `
-        <a-scene
-          id="ar-scene"
-          embedded
-          arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-          renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true;"
-          vr-mode-ui="enabled: false"
-        >
-          <a-marker preset="hiro" id="hiro-marker" emitevents="true">
+    function setupMarkerEvents() {
+      // Poll until the marker element is upgraded by A-Frame
+      const check = setInterval(() => {
+        const marker = document.getElementById('hiro-marker');
+        const crystalGroup = document.getElementById('crystal-group');
+        const statusText = document.getElementById('status-text');
 
-            <!-- ===== Floating 3D Crystal Group ===== -->
-            <a-entity id="crystal-group" position="0 0 0" scale="0 0 0">
+        if (!marker || !marker.hasLoaded) return; // not ready yet
 
-              <!-- Base Glow Ring -->
-              <a-ring
-                position="0 0.02 0" rotation="-90 0 0"
-                radius-inner="0.25" radius-outer="0.55"
-                material="color: #7C3AED; opacity: 0.25; side: double; transparent: true;"
-                animation="property: scale; from: 0.9 0.9 0.9; to: 1.15 1.15 1.15; dir: alternate; loop: true; dur: 2000; easing: easeInOutSine"
-                animation__rotate="property: rotation; from: -90 0 0; to: -90 360 0; loop: true; dur: 8000; easing: linear"
-              ></a-ring>
+        clearInterval(check);
 
-              <!-- Secondary Base Ring -->
-              <a-ring
-                position="0 0.015 0" rotation="-90 0 0"
-                radius-inner="0.15" radius-outer="0.2"
-                material="color: #22D3EE; opacity: 0.3; side: double; transparent: true;"
-                animation="property: scale; from: 1.1 1.1 1.1; to: 0.85 0.85 0.85; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
-                animation__rotate="property: rotation; from: -90 0 0; to: -90 -360 0; loop: true; dur: 6000; easing: linear"
-              ></a-ring>
-
-              <!-- ===== Main Crystal (Diamond Shape) ===== -->
-              <a-entity id="crystal-main" position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
-                animation__spin="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 6000; easing: linear"
-              >
-                <a-cone position="0 0.1 0" radius-bottom="0.18" radius-top="0" height="0.32" segments-radial="6"
-                  material="color: #8B5CF6; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"></a-cone>
-                <a-cone position="0 -0.08 0" radius-bottom="0" radius-top="0.18" height="0.22" segments-radial="6"
-                  material="color: #6D28D9; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"></a-cone>
-                <a-sphere position="0 0.02 0" radius="0.08"
-                  material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.8; opacity: 0.6; transparent: true;"
-                  animation="property: scale; from: 0.8 0.8 0.8; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
-                ></a-sphere>
-              </a-entity>
-
-              <!-- ===== Orbiting Ring 1 ===== -->
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-torus radius="0.32" radius-tubular="0.006" segments-radial="3" segments-tubular="64"
-                  material="color: #A78BFA; opacity: 0.6; transparent: true; emissive: #7C3AED; emissiveIntensity: 0.3;"
-                  rotation="25 0 15"
-                  animation="property: rotation; from: 25 0 15; to: 25 360 15; loop: true; dur: 4000; easing: linear"
-                ></a-torus>
-              </a-entity>
-
-              <!-- ===== Orbiting Ring 2 ===== -->
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-torus radius="0.38" radius-tubular="0.004" segments-radial="3" segments-tubular="64"
-                  material="color: #22D3EE; opacity: 0.4; transparent: true; emissive: #06B6D4; emissiveIntensity: 0.3;"
-                  rotation="70 0 -20"
-                  animation="property: rotation; from: 70 0 -20; to: 70 -360 -20; loop: true; dur: 5000; easing: linear"
-                ></a-torus>
-              </a-entity>
-
-              <!-- ===== Orbiting Particles ===== -->
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity animation="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear">
-                  <a-sphere position="0.42 0 0" radius="0.022"
-                    material="color: #DDD6FE; emissive: #A78BFA; emissiveIntensity: 1; opacity: 0.9; transparent: true;"></a-sphere>
-                </a-entity>
-              </a-entity>
-
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity rotation="45 0 30"
-                  animation="property: rotation; from: 45 0 30; to: 45 -360 30; loop: true; dur: 4500; easing: linear">
-                  <a-sphere position="0.35 0 0" radius="0.016"
-                    material="color: #A5F3FC; emissive: #22D3EE; emissiveIntensity: 1; opacity: 0.8; transparent: true;"></a-sphere>
-                </a-entity>
-              </a-entity>
-
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity rotation="80 30 0"
-                  animation="property: rotation; from: 80 30 0; to: 80 390 0; loop: true; dur: 3800; easing: linear">
-                  <a-sphere position="0.3 0 0" radius="0.014"
-                    material="color: #FBCFE8; emissive: #EC4899; emissiveIntensity: 0.8; opacity: 0.7; transparent: true;"></a-sphere>
-                </a-entity>
-              </a-entity>
-
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity animation="property: rotation; from: 0 0 60; to: 360 0 60; loop: true; dur: 2000; easing: linear">
-                  <a-sphere position="0.25 0 0" radius="0.01"
-                    material="color: #FDE68A; emissive: #F59E0B; emissiveIntensity: 1; opacity: 0.9; transparent: true;"></a-sphere>
-                </a-entity>
-              </a-entity>
-
-              <!-- ===== Floating Mini Shapes ===== -->
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity animation="property: rotation; from: 20 0 0; to: 20 360 0; loop: true; dur: 7000; easing: linear">
-                  <a-box position="0.5 0.05 0" width="0.035" height="0.035" depth="0.035"
-                    material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.5; opacity: 0.7; transparent: true;"
-                    animation="property: rotation; to: 360 360 0; loop: true; dur: 3000; easing: linear"></a-box>
-                </a-entity>
-              </a-entity>
-
-              <a-entity position="0 0.6 0"
-                animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
-                <a-entity animation="property: rotation; from: -30 0 45; to: -30 -360 45; loop: true; dur: 9000; easing: linear">
-                  <a-octahedron position="0.55 -0.05 0" radius="0.025"
-                    material="color: #A5F3FC; emissive: #06B6D4; emissiveIntensity: 0.5; opacity: 0.6; transparent: true;"
-                    animation="property: rotation; to: 0 0 360; loop: true; dur: 4000; easing: linear"></a-octahedron>
-                </a-entity>
-              </a-entity>
-
-              <!-- ===== Lighting ===== -->
-              <a-light type="point" position="0 0.8 0" color="#8B5CF6" intensity="1.0" distance="4"></a-light>
-              <a-light type="point" position="0.3 0.5 0.3" color="#22D3EE" intensity="0.5" distance="3"></a-light>
-              <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
-
-            </a-entity>
-          </a-marker>
-
-          <a-entity camera></a-entity>
-        </a-scene>
-      `;
-
-      // Wait for scene to initialize, then set up events
-      setTimeout(() => {
-        setupAREvents();
-      }, 1000);
-    }
-
-    function setupAREvents() {
-      const scene = document.getElementById('ar-scene');
-      const statusText = document.getElementById('status-text');
-      const hint = document.getElementById('ar-hint');
-      const crystalGroup = document.getElementById('crystal-group');
-      const marker = document.getElementById('hiro-marker');
-
-      if (!scene || !marker) {
-        console.warn('AR scene not ready yet, retrying...');
-        setTimeout(setupAREvents, 500);
-        return;
-      }
-
-      // Show the AR UI
-      loadingScreen.classList.add('hidden');
-      topBar.style.display = 'flex';
-      bottomHint.style.display = 'block';
-
-      // Marker found
-      marker.addEventListener('markerFound', () => {
-        statusText.textContent = 'Marker Detected ✓';
-        hint.style.display = 'none';
-
-        crystalGroup.setAttribute('animation__show', {
-          property: 'scale',
-          to: '1 1 1',
-          dur: 800,
-          easing: 'easeOutElastic'
-        });
-      });
-
-      // Marker lost
-      marker.addEventListener('markerLost', () => {
-        statusText.textContent = 'Searching...';
-        hint.style.display = 'block';
-
-        crystalGroup.setAttribute('animation__hide', {
-          property: 'scale',
-          to: '0 0 0',
-          dur: 300,
-          easing: 'easeInQuad'
-        });
-      });
-
-      // Also listen for scene loaded as backup
-      scene.addEventListener('loaded', () => {
+        // AR is live — show the UI
         loadingScreen.classList.add('hidden');
         topBar.style.display = 'flex';
-        bottomHint.style.display = 'block';
-      });
+        hint.style.display = 'block';
+
+        // Marker found → scale the crystal group in
+        marker.addEventListener('markerFound', () => {
+          console.log('✅ Marker found');
+          statusText.textContent = 'Marker Detected ✓';
+          hint.style.display = 'none';
+          crystalGroup.setAttribute('scale', '1 1 1');
+        });
+
+        // Marker lost → hide the crystal
+        marker.addEventListener('markerLost', () => {
+          console.log('❌ Marker lost');
+          statusText.textContent = 'Searching...';
+          hint.style.display = 'block';
+          crystalGroup.setAttribute('scale', '0 0 0');
+        });
+
+      }, 300);
+
+      // Fallback: if marker never reports hasLoaded, still show UI after 6s
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        topBar.style.display = 'flex';
+        hint.style.display = 'block';
+      }, 6000);
     }
 
-    // Catch AR.js errors that bubble to window
+    // Catch any uncaught AR.js webcam errors
     window.addEventListener('error', (e) => {
-      if (e.message && (e.message.includes('webcam') || e.message.includes('video') || e.message.includes('camera'))) {
+      if (e.message && /webcam|video|camera|NotReadable/i.test(e.message)) {
         showError({ name: 'NotReadableError', message: e.message });
       }
     });
 
-    // Start!
+    // Go!
     initAR();
   </script>
 
