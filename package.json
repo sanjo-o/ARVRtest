@@ -1,0 +1,11 @@
+{
+  "name": "ar-qr-experience",
+  "version": "1.0.0",
+  "description": "Web AR experience - scan QR code to see 3D objects in augmented reality",
+  "scripts": {
+    "dev": "npx -y serve . -l 3000 --cors",
+    "start": "npx -y serve . -l 3000 --cors"
+  },
+  "keywords": ["ar", "augmented-reality", "qr-code", "aframe", "arjs"],
+  "license": "MIT"
+}

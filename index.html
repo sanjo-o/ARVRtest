@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR QR Experience — Augmented Reality with QR Codes</title>
+  <meta name="description" content="Scan a QR code and watch a 3D holographic crystal appear in augmented reality. Works on iOS and desktop browsers.">
+  <link rel="stylesheet" href="index.css">
+  <!-- QR Code Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-orbs">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+
+  <div class="container">
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <a href="/" class="logo">
+        <div class="logo-icon">◇</div>
+        <div class="logo-text"><span>AR</span>Experience</div>
+      </a>
+      <div class="nav-badge">WebAR • A-Frame</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        Augmented Reality Ready
+      </div>
+      <h1>
+        Scan the QR.<br>
+        <span class="gradient-text">See the Future.</span>
+      </h1>
+      <p class="subtitle">
+        Point your phone camera at the QR code to open the AR experience. 
+        Then aim at the marker to see a 3D holographic crystal floating in your world.
+      </p>
+      <div class="btn-group">
+        <a href="ar.html" class="btn btn-primary" id="launch-ar-btn">🚀 Launch AR Directly</a>
+        <button class="btn btn-secondary" id="print-btn" onclick="window.print()">🖨️ Print Marker</button>
+      </div>
+    </section>
+
+    <!-- URL Config -->
+    <section class="url-config">
+      <div class="url-input-group">
+        <input type="text" id="url-input" placeholder="Enter your deployed URL (e.g. https://your-site.vercel.app)">
+        <button class="btn btn-primary" id="generate-qr-btn" onclick="generateQR()">Generate QR</button>
+      </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+
+      <!-- QR Code Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📱</div>
+          <h2 class="card-title">QR Code</h2>
+        </div>
+        <div class="card-content">
+          <div class="qr-container">
+            <div class="qr-wrapper">
+              <div id="qr-code"></div>
+            </div>
+            <p class="qr-label">Scan with your phone camera to open AR</p>
+            <div class="qr-url" id="qr-url-display"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AR Marker Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🎯</div>
+          <h2 class="card-title">AR Marker (Hiro)</h2>
+        </div>
+        <div class="card-content">
+          <div class="marker-container">
+            <div class="marker-wrapper">
+              <img 
+                src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" 
+                alt="Hiro AR Marker"
+                id="hiro-marker-img"
+                crossorigin="anonymous"
+              >
+            </div>
+            <p class="marker-label">Print this marker — point your camera at it</p>
+            <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" 
+               download="hiro-marker.png" 
+               class="btn btn-secondary"
+               style="font-size:0.8rem; padding:8px 18px;">
+              ⬇️ Download Marker
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Instructions -->
+    <section class="instructions">
+      <div class="section-header">
+        <h2>How It Works</h2>
+        <p>Three simple steps to experience augmented reality</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-emoji">🖨️</div>
+          <div class="step-number">1</div>
+          <h3>Print the Marker</h3>
+          <p>Print or display the Hiro marker on your screen. This is the AR target your camera will track.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-emoji">📷</div>
+          <div class="step-number">2</div>
+          <h3>Scan the QR Code</h3>
+          <p>Use your phone's camera to scan the QR code. It will open the AR experience in your mobile browser.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-emoji">✨</div>
+          <div class="step-number">3</div>
+          <h3>Point at Marker</h3>
+          <p>Aim your phone camera at the printed Hiro marker. Watch the 3D crystal appear and float above it!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-emoji">🌐</div>
+          <div class="step-number">4</div>
+          <h3>Works Everywhere</h3>
+          <p>Compatible with iOS Safari, Android Chrome, and desktop browsers. No app installation needed.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Built with <a href="https://aframe.io" target="_blank">A-Frame</a> & <a href="https://ar-js-org.github.io/AR.js-Docs/" target="_blank">AR.js</a> — Works on iOS & Windows</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // ============================================
+    // QR Code Generation
+    // ============================================
+
+    let qrInstance = null;
+
+    function getARPageURL(base) {
+      // Remove trailing slash
+      base = base.replace(/\/+$/, '');
+      return base + '/ar.html';
+    }
+
+    function generateQR(customURL) {
+      const input = document.getElementById('url-input');
+      const display = document.getElementById('qr-url-display');
+      const container = document.getElementById('qr-code');
+
+      let baseURL;
+      if (customURL) {
+        baseURL = customURL;
+      } else if (input.value.trim()) {
+        baseURL = input.value.trim();
+      } else {
+        // Auto-detect current URL
+        baseURL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+      }
+
+      const arURL = getARPageURL(baseURL);
+
+      // Clear previous QR
+      container.innerHTML = '';
+
+      // Generate new QR
+      qrInstance = new QRCode(container, {
+        text: arURL,
+        width: 200,
+        height: 200,
+        colorDark: "#1a1a2e",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Update URL display
+      display.textContent = '🔗 ' + arURL;
+
+      // Save to input
+      if (!input.value.trim()) {
+        input.value = baseURL;
+      }
+    }
+
+    // Auto-generate QR on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      generateQR();
+
+      // Handle Enter key on input
+      document.getElementById('url-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          generateQR();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

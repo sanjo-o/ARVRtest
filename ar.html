@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AR Experience — View 3D Object</title>
+  <meta name="description" content="Point your camera at the Hiro marker to see a 3D holographic crystal in augmented reality.">
+
+  <!-- A-Frame & AR.js -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <link rel="stylesheet" href="index.css">
+
+  <style>
+    /* AR page specific overrides */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    /* Hide A-Frame's default UI */
+    .a-enter-vr, .a-orientation-modal {
+      display: none !important;
+    }
+
+    /* Custom glow component styles */
+    a-scene {
+      position: fixed;
+      inset: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="ar-loading" id="ar-loading">
+    <div class="loading-spinner"></div>
+    <h2>Initializing AR</h2>
+    <p>Please allow camera access when prompted</p>
+  </div>
+
+  <!-- AR UI Overlay -->
+  <div class="ar-top-bar">
+    <a href="index.html" class="ar-back-btn" id="ar-back-btn">
+      ← Back
+    </a>
+    <div class="ar-status" id="ar-status">
+      <span class="status-dot"></span>
+      <span id="status-text">Camera Active</span>
+    </div>
+  </div>
+
+  <div class="ar-bottom-hint" id="ar-hint">
+    <span class="hint-icon">📷</span>
+    Point your camera at the Hiro marker
+  </div>
+
+  <!-- ============================================
+       A-Frame AR Scene
+       ============================================ -->
+  <a-scene
+    id="ar-scene"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true;"
+    vr-mode-ui="enabled: false"
+  >
+
+    <!-- Hiro Marker -->
+    <a-marker preset="hiro" id="hiro-marker" emitevents="true">
+
+      <!-- ===== Floating 3D Crystal Group ===== -->
+      <a-entity
+        id="crystal-group"
+        position="0 0 0"
+        scale="0 0 0"
+      >
+
+        <!-- Base Glow Ring -->
+        <a-ring
+          position="0 0.02 0"
+          rotation="-90 0 0"
+          radius-inner="0.25"
+          radius-outer="0.55"
+          material="color: #7C3AED; opacity: 0.25; side: double; transparent: true;"
+          animation="property: scale; from: 0.9 0.9 0.9; to: 1.15 1.15 1.15; dir: alternate; loop: true; dur: 2000; easing: easeInOutSine"
+          animation__rotate="property: rotation; from: -90 0 0; to: -90 360 0; loop: true; dur: 8000; easing: linear"
+        ></a-ring>
+
+        <!-- Secondary Base Ring -->
+        <a-ring
+          position="0 0.015 0"
+          rotation="-90 0 0"
+          radius-inner="0.15"
+          radius-outer="0.2"
+          material="color: #22D3EE; opacity: 0.3; side: double; transparent: true;"
+          animation="property: scale; from: 1.1 1.1 1.1; to: 0.85 0.85 0.85; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
+          animation__rotate="property: rotation; from: -90 0 0; to: -90 -360 0; loop: true; dur: 6000; easing: linear"
+        ></a-ring>
+
+        <!-- ===== Main Crystal (Diamond Shape) ===== -->
+        <a-entity
+          id="crystal-main"
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+          animation__spin="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 6000; easing: linear"
+        >
+          <!-- Top Pyramid -->
+          <a-cone
+            position="0 0.1 0"
+            radius-bottom="0.18"
+            radius-top="0"
+            height="0.32"
+            segments-radial="6"
+            material="color: #8B5CF6; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"
+          ></a-cone>
+
+          <!-- Bottom Pyramid (inverted) -->
+          <a-cone
+            position="0 -0.08 0"
+            radius-bottom="0"
+            radius-top="0.18"
+            height="0.22"
+            segments-radial="6"
+            material="color: #6D28D9; metalness: 0.9; roughness: 0.1; opacity: 0.85; transparent: true;"
+          ></a-cone>
+
+          <!-- Inner Glow Sphere -->
+          <a-sphere
+            position="0 0.02 0"
+            radius="0.08"
+            material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.8; opacity: 0.6; transparent: true;"
+            animation="property: scale; from: 0.8 0.8 0.8; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine"
+          ></a-sphere>
+        </a-entity>
+
+        <!-- ===== Orbiting Ring 1 ===== -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-torus
+            radius="0.32"
+            radius-tubular="0.006"
+            segments-radial="3"
+            segments-tubular="64"
+            material="color: #A78BFA; opacity: 0.6; transparent: true; emissive: #7C3AED; emissiveIntensity: 0.3;"
+            rotation="25 0 15"
+            animation="property: rotation; from: 25 0 15; to: 25 360 15; loop: true; dur: 4000; easing: linear"
+          ></a-torus>
+        </a-entity>
+
+        <!-- ===== Orbiting Ring 2 ===== -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-torus
+            radius="0.38"
+            radius-tubular="0.004"
+            segments-radial="3"
+            segments-tubular="64"
+            material="color: #22D3EE; opacity: 0.4; transparent: true; emissive: #06B6D4; emissiveIntensity: 0.3;"
+            rotation="70 0 -20"
+            animation="property: rotation; from: 70 0 -20; to: 70 -360 -20; loop: true; dur: 5000; easing: linear"
+          ></a-torus>
+        </a-entity>
+
+        <!-- ===== Orbiting Particles ===== -->
+        <!-- Particle orbit 1 -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity animation="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear">
+            <a-sphere
+              position="0.42 0 0"
+              radius="0.022"
+              material="color: #DDD6FE; emissive: #A78BFA; emissiveIntensity: 1; opacity: 0.9; transparent: true;"
+            ></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- Particle orbit 2 -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity 
+            rotation="45 0 30"
+            animation="property: rotation; from: 45 0 30; to: 45 -360 30; loop: true; dur: 4500; easing: linear"
+          >
+            <a-sphere
+              position="0.35 0 0"
+              radius="0.016"
+              material="color: #A5F3FC; emissive: #22D3EE; emissiveIntensity: 1; opacity: 0.8; transparent: true;"
+            ></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- Particle orbit 3 -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity 
+            rotation="80 30 0"
+            animation="property: rotation; from: 80 30 0; to: 80 390 0; loop: true; dur: 3800; easing: linear"
+          >
+            <a-sphere
+              position="0.3 0 0"
+              radius="0.014"
+              material="color: #FBCFE8; emissive: #EC4899; emissiveIntensity: 0.8; opacity: 0.7; transparent: true;"
+            ></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- Particle orbit 4 (tiny fast) -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity animation="property: rotation; from: 0 0 60; to: 360 0 60; loop: true; dur: 2000; easing: linear">
+            <a-sphere
+              position="0.25 0 0"
+              radius="0.01"
+              material="color: #FDE68A; emissive: #F59E0B; emissiveIntensity: 1; opacity: 0.9; transparent: true;"
+            ></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- ===== Floating Mini Shapes ===== -->
+        <!-- Tiny cube 1 -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity animation="property: rotation; from: 20 0 0; to: 20 360 0; loop: true; dur: 7000; easing: linear">
+            <a-box
+              position="0.5 0.05 0"
+              width="0.035"
+              height="0.035"
+              depth="0.035"
+              material="color: #C4B5FD; emissive: #8B5CF6; emissiveIntensity: 0.5; opacity: 0.7; transparent: true;"
+              animation="property: rotation; to: 360 360 0; loop: true; dur: 3000; easing: linear"
+            ></a-box>
+          </a-entity>
+        </a-entity>
+
+        <!-- Tiny octahedron 2 -->
+        <a-entity
+          position="0 0.6 0"
+          animation="property: position; from: 0 0.55 0; to: 0 0.75 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine"
+        >
+          <a-entity animation="property: rotation; from: -30 0 45; to: -30 -360 45; loop: true; dur: 9000; easing: linear">
+            <a-octahedron
+              position="0.55 -0.05 0"
+              radius="0.025"
+              material="color: #A5F3FC; emissive: #06B6D4; emissiveIntensity: 0.5; opacity: 0.6; transparent: true;"
+              animation="property: rotation; to: 0 0 360; loop: true; dur: 4000; easing: linear"
+            ></a-octahedron>
+          </a-entity>
+        </a-entity>
+
+        <!-- ===== Lighting ===== -->
+        <a-light type="point" position="0 0.8 0" color="#8B5CF6" intensity="1.0" distance="4"></a-light>
+        <a-light type="point" position="0.3 0.5 0.3" color="#22D3EE" intensity="0.5" distance="3"></a-light>
+        <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
+
+      </a-entity>
+
+    </a-marker>
+
+    <!-- Camera -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+  <script>
+    // ============================================
+    // AR Scene Controller
+    // ============================================
+
+    const loadingScreen = document.getElementById('ar-loading');
+    const statusText = document.getElementById('status-text');
+    const hint = document.getElementById('ar-hint');
+    const crystalGroup = document.getElementById('crystal-group');
+    const marker = document.getElementById('hiro-marker');
+
+    let markerVisible = false;
+
+    // Hide loading screen once AR is ready
+    const scene = document.getElementById('ar-scene');
+    scene.addEventListener('loaded', () => {
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+      }, 1500);
+    });
+
+    // Fallback: hide loading after max time
+    setTimeout(() => {
+      loadingScreen.classList.add('hidden');
+    }, 5000);
+
+    // Marker found - animate in
+    marker.addEventListener('markerFound', () => {
+      markerVisible = true;
+      statusText.textContent = 'Marker Detected ✓';
+      hint.style.display = 'none';
+
+      // Animate crystal group in with scale
+      crystalGroup.setAttribute('animation__show', {
+        property: 'scale',
+        to: '1 1 1',
+        dur: 800,
+        easing: 'easeOutElastic'
+      });
+    });
+
+    // Marker lost - animate out
+    marker.addEventListener('markerLost', () => {
+      markerVisible = false;
+      statusText.textContent = 'Searching...';
+      hint.style.display = 'block';
+
+      // Animate crystal group out
+      crystalGroup.setAttribute('animation__hide', {
+        property: 'scale',
+        to: '0 0 0',
+        dur: 300,
+        easing: 'easeInQuad'
+      });
+    });
+  </script>
+
+</body>
+</html>
